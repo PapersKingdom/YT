@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YtPulse — Advanced YouTube Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0f172a",
+              electric: "#6366f1",
+              aurora: "#22d3ee",
+              ember: "#fb7185",
+              moss: "#34d399",
+              smoke: "#f8fafc",
+            },
+            boxShadow: {
+              glow: "0 0 40px rgba(99, 102, 241, 0.35)",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-ink text-white min-h-screen">
+    <div class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-electric/20 via-ink to-aurora/10"></div>
+      <div class="absolute -top-24 -right-32 h-96 w-96 rounded-full bg-electric/30 blur-3xl"></div>
+      <div class="absolute top-1/2 -left-32 h-72 w-72 rounded-full bg-aurora/30 blur-3xl"></div>
+      <main class="relative max-w-6xl mx-auto px-6 py-12">
+        <nav class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-electric to-aurora p-[2px]">
+              <div class="h-full w-full rounded-xl bg-ink flex items-center justify-center">
+                <span class="text-lg font-black">YT</span>
+              </div>
+            </div>
+            <div>
+              <p class="text-xl font-semibold">YtPulse</p>
+              <p class="text-sm text-slate-400">Next-gen local YouTube downloader</p>
+            </div>
+          </div>
+          <div class="hidden md:flex items-center gap-4 text-sm text-slate-300">
+            <span>Zero API calls</span>
+            <span class="h-1 w-1 rounded-full bg-slate-500"></span>
+            <span>yt-dlp powered</span>
+          </div>
+        </nav>
+
+        <section class="mt-12 grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow backdrop-blur">
+              <h1 class="text-3xl md:text-4xl font-bold leading-tight">
+                Download YouTube videos in premium quality, playlists, or audio-only.
+              </h1>
+              <p class="mt-4 text-slate-300">
+                Paste a URL, pick a format, and instantly download. YtPulse runs locally with
+                yt-dlp, no external APIs required.
+              </p>
+
+              <div class="mt-6 space-y-4">
+                <label class="text-sm uppercase tracking-[0.2em] text-slate-400">Video URL</label>
+                <div class="flex flex-col gap-3 md:flex-row">
+                  <input
+                    id="video-url"
+                    type="text"
+                    placeholder="https://youtube.com/watch?v=..."
+                    class="flex-1 rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-electric"
+                  />
+                  <button
+                    id="fetch-info"
+                    class="rounded-2xl bg-electric px-6 py-3 font-semibold text-white hover:bg-indigo-500 transition"
+                  >
+                    Analyze
+                  </button>
+                </div>
+              </div>
+
+              <div id="info-card" class="mt-6 hidden rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+                <div class="flex flex-col gap-4 md:flex-row">
+                  <img id="video-thumb" class="h-28 w-full md:w-44 rounded-xl object-cover" alt="Thumbnail" />
+                  <div class="flex-1">
+                    <p id="video-title" class="text-lg font-semibold"></p>
+                    <p id="video-meta" class="text-sm text-slate-400"></p>
+                    <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                      <span class="rounded-full bg-electric/20 px-3 py-1">Smart format selector</span>
+                      <span class="rounded-full bg-aurora/20 px-3 py-1">Playlist aware</span>
+                      <span class="rounded-full bg-ember/20 px-3 py-1">Subtitle support</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 grid gap-4 md:grid-cols-2">
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <label class="text-sm text-slate-300">Format</label>
+                  <select
+                    id="format-select"
+                    class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-sm"
+                  >
+                    <option value="">Auto (Best)</option>
+                  </select>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <label class="text-sm text-slate-300">Audio Only</label>
+                  <div class="mt-2 flex items-center gap-3">
+                    <input id="audio-only" type="checkbox" class="h-5 w-5 rounded border-slate-600" />
+                    <select
+                      id="audio-format"
+                      class="flex-1 rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-sm"
+                    >
+                      <option value="mp3">MP3</option>
+                      <option value="m4a">M4A</option>
+                      <option value="wav">WAV</option>
+                      <option value="flac">FLAC</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <label class="text-sm text-slate-300">Subtitles</label>
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    <button class="subtitle-btn" data-lang="en">English</button>
+                    <button class="subtitle-btn" data-lang="es">Spanish</button>
+                    <button class="subtitle-btn" data-lang="fr">French</button>
+                    <button class="subtitle-btn" data-lang="de">German</button>
+                    <button class="subtitle-btn" data-lang="hi">Hindi</button>
+                  </div>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <label class="text-sm text-slate-300">Download Mode</label>
+                  <div class="mt-2 space-y-2 text-sm text-slate-400">
+                    <p>• Playlist-friendly, downloads everything by default.</p>
+                    <p>• Smart auto format merges video + audio.</p>
+                    <p>• Output saved to your local machine.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 flex flex-col gap-3 md:flex-row">
+                <button
+                  id="download-btn"
+                  class="flex-1 rounded-2xl bg-gradient-to-r from-electric to-aurora px-6 py-3 font-semibold text-white shadow-glow hover:opacity-90"
+                >
+                  Download Now
+                </button>
+                <button
+                  id="reset-btn"
+                  class="rounded-2xl border border-white/20 px-6 py-3 font-semibold text-white hover:bg-white/10"
+                >
+                  Reset
+                </button>
+              </div>
+
+              <p id="status" class="mt-4 text-sm text-slate-400"></p>
+            </div>
+          </div>
+
+          <aside class="space-y-6">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <h2 class="text-xl font-semibold">Advanced Features</h2>
+              <ul class="mt-4 space-y-3 text-sm text-slate-300">
+                <li class="flex items-center gap-3">
+                  <span class="h-2 w-2 rounded-full bg-moss"></span>
+                  Smart format sorting with resolution + codec breakdown.
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="h-2 w-2 rounded-full bg-aurora"></span>
+                  Audio extraction pipeline with FFmpeg.
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="h-2 w-2 rounded-full bg-ember"></span>
+                  Subtitles selection ready for multilingual content.
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="h-2 w-2 rounded-full bg-electric"></span>
+                  Playlist-aware downloads with one-click fetching.
+                </li>
+              </ul>
+            </div>
+
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <h2 class="text-xl font-semibold">Download Insights</h2>
+              <div class="mt-4 space-y-4 text-sm text-slate-300">
+                <div class="flex items-center justify-between">
+                  <span>Format options</span>
+                  <span id="format-count" class="text-white font-semibold">0</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Audio only</span>
+                  <span id="audio-state" class="text-white font-semibold">No</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Subtitles</span>
+                  <span id="subtitle-count" class="text-white font-semibold">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <h2 class="text-xl font-semibold">Tips</h2>
+              <div class="mt-3 text-sm text-slate-400">
+                <p>Use the Analyze button to load formats, then download in seconds.</p>
+                <p class="mt-2">Supported platforms include YouTube, Vimeo, and more.</p>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
